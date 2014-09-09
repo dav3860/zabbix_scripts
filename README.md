@@ -5,6 +5,8 @@ This is a collection of scripts for use with Zabbix.
 
 ## zbxwmi
 Connects to a Windows server using WMI to discover and collect WMI data. It uses Low-Level Discovery.
+
+zbxwmi must be installed on a Zabbix server or proxy and depends on wmic (can be installed from rpmforge or compiled from source, http://dev.zenoss.org/svn/tags/wmi-1.3.14/).
 ```
 Usage:
   zbxwmi [-d] get <host> <item> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>]
@@ -60,3 +62,6 @@ zbxwmi SVR1 Name Name,Size,FreeSpace "Win32_LogicalDisk" -f "MediaType = 12" -D 
     ]
 }
 ```
+
+A sample template to monitor WIndows services is provided. Don't forget to use a secure Windows account to query your hosts (a domain admin will work but it's not recommended). You can add the credentials into the script if you don't want to display them into the Zabbix frontend.
+
