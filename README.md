@@ -8,6 +8,8 @@ Connects to a Windows server using WMI to discover and collect WMI data. It uses
 
 zbxwmi must be installed on a Zabbix server or proxy and depends on wmic.
 
+![](https://github.com/dav3860/zabbix_scripts/blob/master/services.png)
+
 ### Installation
 * Create a Windows user with WMI permissions
 * Install wmic. It can be installed from rpmforge or compiled from source, http://dev.zenoss.org/svn/tags/wmi-1.3.14/
