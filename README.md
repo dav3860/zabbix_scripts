@@ -47,8 +47,8 @@ zbxwmi bulk SVR1 Name Name,Size,FreeSpace "Win32_LogicalDisk" -f "MediaType = 12
 ```
 
 both (default action): combines the discover and bulk actions to create the discovered items in Zabbix using LLD and get their values.
-zbxwmi SVR1 Name Name,Size,FreeSpace "Win32_LogicalDisk" -f "MediaType = 12" -D MYDOMAIN -U wmiuser -P secret
 ```
+zbxwmi SVR1 Name Name,Size,FreeSpace "Win32_LogicalDisk" -f "MediaType = 12" -D MYDOMAIN -U wmiuser -P secret
 {
     "data": [
         {
