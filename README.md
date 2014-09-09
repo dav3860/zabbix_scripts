@@ -19,6 +19,7 @@ pip install -r requirements.txt
 ```
 * Import the template and set the required macros.
 
+### Usage
 ```
 Usage:
   zbxwmi [-d] get <host> <item> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>]
@@ -27,7 +28,7 @@ Usage:
   zbxwmi --help
   zbxwmi --version
 ```
-### Actions:
+### Actions
 
 get: query a specific WMI item.
 ```
