@@ -3,7 +3,7 @@ zabbix_scripts
 
 This is a collection of scripts for use with Zabbix.
 
-* zbxwmi
+# zbxwmi
 Connects to a Windows server using WMI to discover and collect WMI data. It uses Low-Level Discovery.
 ```
 Usage:
