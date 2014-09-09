@@ -22,10 +22,6 @@ class NullDevice():
 
 def main():
 
-  username = "wmiuser"
-  password = "password"
-  domain = "DOMAIN"
-
   usage="""
 Usage:
   zbxwmi [-d] get <host> <item> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>] 
@@ -46,8 +42,11 @@ Options:
   <class>                                     The class to use in the query
   -f <filter>, --filter <filter>              An optional filter to the query
   -D <domain>, --domain <domain>              The domain to use for authentication
+                                              [default: DOMAIN]
   -U <username>, --username <username>        The username to use for authentication
+                                              [default: wmiuser] 
   -P <password>, --password <password>        The password to use for authentication
+                                              [default: password]
   -d, --debug                                 Debug mode, be more verbose
   -o <logfile>, --output <logfile>            The log file to use
 
