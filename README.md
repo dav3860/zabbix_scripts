@@ -4,7 +4,7 @@ zabbix_scripts
 This is a collection of scripts for use with Zabbix.
 
 ## zbxwmi
-Connects to a Windows server using WMI to discover and collect WMI data. It uses Low-Level Discovery.
+Connects to a Windows server using WMI to discover and collect WMI data. It uses Low-Level Discovery and is agentless.
 
 zbxwmi must be installed on a Zabbix server or proxy and depends on wmic.
 
