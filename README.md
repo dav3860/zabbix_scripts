@@ -6,7 +6,7 @@ This is a collection of scripts for use with Zabbix.
 ## zbxwmi
 Connects to a Windows server using WMI to discover and collect WMI data. It uses Low-Level Discovery.
 
-zbxwmi must be installed on a Zabbix server or proxy and depends on wmic (can be installed from rpmforge or compiled from source, http://dev.zenoss.org/svn/tags/wmi-1.3.14/).
+zbxwmi must be installed on a Zabbix server or proxy and depends on wmic.
 ```
 Usage:
   zbxwmi [-d] get <host> <item> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>]
@@ -15,7 +15,8 @@ Usage:
   zbxwmi --help
   zbxwmi --version
 ```
-Actions:
+### Actions:
+
 get: query a specific WMI item.
 ```
 zbxwmi get SVR1 FreeSpace "Win32_LogicalDisk" -f "MediaType = 12 AND Name = 'C:'"
@@ -64,4 +65,15 @@ zbxwmi SVR1 Name Name,Size,FreeSpace "Win32_LogicalDisk" -f "MediaType = 12" -D 
 ```
 
 A sample template to monitor WIndows services is provided. Don't forget to use a secure Windows account to query your hosts (a domain admin will work but it's not recommended). You can add the credentials into the script if you don't want to display them into the Zabbix frontend.
+
+### Installation
+* Create a Windows user with WMI permissions
+* Install wmic. It can be installed from rpmforge or compiled from source, http://dev.zenoss.org/svn/tags/wmi-1.3.14/
+* Clone this repository into /usr/lib/zabbix/externalscripts/
+* Make zabbix the owner of the zbxwmi script and add execute permissions
+* Install the dependencies :
+```
+pip install -r requirements.txt
+```
+* Import the template and set the required macros.
 
