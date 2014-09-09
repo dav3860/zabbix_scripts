@@ -1,0 +1,156 @@
+#!/usr/bin/env python
+#
+
+"""
+zbxwmi : discovery and bulk checks of WMI items with Zabbix
+
+v0.1 : initial release
+v0.2 : added "get" action
+
+"""
+
+import sys
+import json
+import logging
+import wmi_client_wrapper as wmi
+from zsend import ZSend
+from docopt import docopt
+
+class NullDevice():
+    def write(self, s):
+        pass
+
+def main():
+
+  username = "wmiuser"
+  password = "password"
+  domain = "DOMAIN"
+
+  usage="""
+Usage:
+  zbxwmi [-d] get <host> <item> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>] 
+  zbxwmi [-d] (bulk|discover|both) <host> <keys> <items> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>] 
+  zbxwmi --help
+  zbxwmi --version
+
+Options:
+  (get|bulk|discover|both)                    The action to take. Possible values : get, bulk, discover, both
+                                              [default: both]
+  <host>                                      The host to query
+  -z, --zabbix <server>                       The Zabbix server or proxy
+                                              [default: localhost]
+  -v, --version                               Display version and exit
+  <keys>                                      The keys to use as indexes for Zabbix LLD discovery
+  <items>                                     The list of items to discover
+  <item>                                      The item to query
+  <class>                                     The class to use in the query
+  -f <filter>, --filter <filter>              An optional filter to the query
+  -D <domain>, --domain <domain>              The domain to use for authentication
+  -U <username>, --username <username>        The username to use for authentication
+  -P <password>, --password <password>        The password to use for authentication
+  -d, --debug                                 Debug mode, be more verbose
+  -o <logfile>, --output <logfile>            The log file to use
+
+"""
+
+  args = docopt(usage, version="0.1")
+
+  # Set the log file
+  level = logging.CRITICAL 
+  if args['--debug']:
+    level = logging.DEBUG
+  elif args['--output']:
+    level = logging.INFO
+  else:
+    level = logging.CRITICAL
+
+  if level:
+    logging.basicConfig(
+      filename=args['--output'],
+      format='%(asctime)s - %(levelname)s - zbxwmi[%(process)s]: %(message)s',
+      level=level
+    )
+
+  # Extract the arguments
+  username = args['--username'] if args['--username'] else username
+  password = args['--password'] if args['--password'] else password
+  domain = args['--domain'] if args['--domain'] else domain
+  host = args['<host>']
+  keys = args['<keys>'].split(',') if args['<keys>'] else []
+  server = args['--zabbix']
+  items = args['<items>'].split(',') if args['<items>'] else args['<item>'].split(',')
+  cls = args['<class>']
+  filter = args['--filter']
+
+  if (args['get'] and len(items) <> 1):
+    logging.error("action 'get' requires only one item")
+    exit(1)
+
+  # Construct the query
+  query = "SELECT " + ",".join(items + keys) + " FROM " + cls
+  if filter:
+    query = query + " WHERE " + filter
+
+  # Run the query
+  logging.info("New query for host " + host + " : " + query)
+  wmic = wmi.WmiClientWrapper(
+    "%s\%s" % (domain, username),
+    password,
+    host,
+  )
+  try:
+    result = wmic.query(query)
+  except Exception, e:
+    logging.error("An error occured with WMI : " + str(e))
+    # print "An error occured with WMI."
+    exit(1)
+
+  # What to do with the results ?
+  if args['get']:
+    print str(result[0][items[0]])
+  elif args['bulk']:
+    sendToZabbix(result, keys, host, server, args['--debug'])
+  elif args['discover']:
+    showJSON(result, keys)
+  elif args['both']: # Discover + bulk
+    showJSON(result, keys)
+    sendToZabbix(result, keys, host, server, args['--debug'])
+  else:
+    logging.error("Invalid action.")
+    exit(1)
+
+  logging.info("Done")
+  
+def sendToZabbix(data, keys, host, server, verbose = False):
+  """
+  Bulk inserts data into Zabbix using zabbix_sender
+  """
+  
+  z = ZSend(server = server, verbose = verbose)
+  for eachItem in data:
+    value = eachItem[keys[0]]
+    [eachItem.pop(eachKey) for eachKey in keys]
+    for k in eachItem.keys():
+      z.add_data(host,"%s[%s]" % (k, value), eachItem[k])
+  
+  if not verbose:
+    sys.stderr = NullDevice()  # redirect the real STDERR
+  z.send(z.build_all())
+    
+def showJSON(data, keys):
+  """
+  Display a JSON-formatted index for Zabbix LLD discovery
+  """
+
+  output = []
+  logging.info("Creating the JSON output for Zabbix LLD discovery")
+  for eachItem in data:
+    props = {}
+    for i,k in enumerate(keys):
+      props["{#WMIINDEX" + str(i) + "}"] =  eachItem[k]
+    output.append(dict(props))
+  print json.dumps({ 'data': output }, indent=4)
+
+if __name__ == '__main__':
+    main()
+

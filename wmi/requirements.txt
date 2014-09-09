@@ -1,0 +1,2 @@
+docopt >= 0.6.1
+wmi-client-wrapper >= 0.0.12
