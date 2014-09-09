@@ -25,7 +25,8 @@ def main():
   usage="""
 Usage:
   zbxwmi [-d] get <host> <item> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>] 
-  zbxwmi [-d] (bulk|discover|both) <host> <keys> <items> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>] 
+  zbxwmi [-d] (bulk|discover) <host> <keys> <items> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>]
+  zbxwmi [-d] <host> <keys> <items> <class> [-f <filter>] [-z <server>] [-D <domain>] [-U <username>] [-P <password] [-o <logfile>] 
   zbxwmi --help
   zbxwmi --version
 
@@ -111,12 +112,9 @@ Options:
     sendToZabbix(result, keys, host, server, args['--debug'])
   elif args['discover']:
     showJSON(result, keys)
-  elif args['both']: # Discover + bulk
+  else: # Discover + bulk
     showJSON(result, keys)
     sendToZabbix(result, keys, host, server, args['--debug'])
-  else:
-    logging.error("Invalid action.")
-    exit(1)
 
   logging.info("Done")
   
