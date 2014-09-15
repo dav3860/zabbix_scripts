@@ -1,2 +1,4 @@
 docopt >= 0.6.1
 wmi-client-wrapper >= 0.0.12
+pywbem >= 0.7.0
+pycrypto
